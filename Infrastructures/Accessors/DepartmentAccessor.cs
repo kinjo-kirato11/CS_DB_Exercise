@@ -1,5 +1,6 @@
 using CS_DB_Exercise.Infrastructures.Entities;
 using CS_DB_Exercise.Infrastructures.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace CS_DB_Exercise.Infrastructures.Accessors;
 /// <summary>
@@ -51,4 +52,16 @@ public class DepartmentAccessor
     //         .SingleOrDefault();
     //     return department;
     // }
+    public DepartmentEntity? FindByIdJoinEmployee(int id)
+    {
+        var department = _context.Departments
+            .Where(d => d.Id == id)
+            .Include(d => d.Employees)
+            .SingleOrDefault();
+        if (department == null)
+        {
+            return null;
+        }
+        return department;
+    }
 }

@@ -12,10 +12,12 @@ class Program
 
         // EmployeeおよびDepartmentテーブルアクセスクラスを生成する
         var employeeAccessor = new EmployeeAccessor(context);
-        // var departmentAccessor = new DepartmentAccessor(context);
+        var departmentAccessor = new DepartmentAccessor(context);
 
         // 演習-11 employeeテーブルの社員を削除する
-        Exercise13(employeeAccessor);
+        //Exercise13(employeeAccessor);
+        // 演習-14 departmentテーブルの部署と所属社員を取得する
+        Exercise14(departmentAccessor);
     }
 
     /// <summary>
@@ -55,5 +57,24 @@ class Program
             return;
         }
         Console.WriteLine($"社員Id={result.Id},社員名={result.Name},部署ID={result.DeptId},部署名={result.Department?.Name}");
+    }
+    private static void Exercise14(DepartmentAccessor departmentAccessor)
+    {
+
+        Console.Write("部署Idを入力してください->");
+        var deptId = int.Parse(Console.ReadLine()!);
+
+        Console.WriteLine("演習-14 指定された部署Idの部署と所属社員を取得する\r\n");
+        var result = departmentAccessor.FindByIdJoinEmployee(deptId);
+        if (result == null)
+        {
+            Console.WriteLine($"部署Id:{deptId}の部署は存在しませんでした");
+            return;
+        }
+        Console.WriteLine($"部署Id={result.Id},部署名={result.Name}");
+        foreach (var employee in result.Employees)
+        {
+            Console.WriteLine($"  社員Id={employee.Id},社員名={employee.Name},部署Id={result.Id}");
+        }
     }
 }
