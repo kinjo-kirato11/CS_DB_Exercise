@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+
 using CS_DB_Exercise.Infrastructures.Contexts;
 using CS_DB_Exercise.Infrastructures.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace CS_DB_Exercise.Infrastructures.Accessors;
 /// <summary>
@@ -38,56 +38,95 @@ public class EmployeeAccessor
 
         return employees;
     }
-    public List<EmployeeEntity>? FindByContainsName(string keyword)
+
+    /// <summary>
+    /// 演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する
+    /// </summary>
+    /// <param name="keyword">検索キーワード</param>
+    /// <returns>検索結果</returns>
+    public List<EmployeeEntity>? FindByContaintsName(string keyword)
     {
         var employees = _context.Employees
-             .Where(e => e.Name!.Contains(keyword))
-             .ToList();
+            .Where(e => e.Name!.Contains(keyword))
+            .ToList();
         if (employees.Count == 0)
         {
             return null;
         }
-
         return employees;
     }
-    public EmployeeEntity? Create(EmployeeEntity employee)
+
+    /// <summary>
+    /// 演習-09 employeeテーブルに新しい社員を追加する
+    /// </summary>
+    /// <param name="employee">追加する社員エンティティ</param>
+    public void Create(EmployeeEntity employee)
     {
-        var result = _context.Employees.Add(employee);
+        _context.Employees.Add(employee);
         _context.SaveChanges();
-        return result.Entity;
     }
+
+    /// <summary>
+    /// 演習-10 指定された社員Idの社員名を変更する
+    /// </summary>
+    /// <param name="employee">変更する社員情報</param>
+    /// <returns>変更結果</returns>
     public EmployeeEntity? UpdateById(EmployeeEntity employee)
     {
-        var result = _context.Employees.Find(employee.Id);
-        if (result == null)
+        var existingEmployee = _context.Employees.Find(employee.Id);
+        if (existingEmployee != null)
         {
-            return null;
+            existingEmployee.Name = employee.Name;
+            _context.SaveChanges();
         }
-        result.Name = employee.Name;
-        _context.SaveChanges();
-        return result;
+        return existingEmployee;
     }
+
+    /// <summary>
+    /// 演習-11 指定された社員Idの社員を削除する
+    /// </summary>
+    /// <param name="id">社員Id</param>
+    /// <returns>削除した社員情報</returns>
     public EmployeeEntity? DeleteById(int id)
     {
-        var result = _context.Employees.Find(id);
-        if (result == null)
+        var employee = _context.Employees.Find(id);
+        if (employee != null)
         {
-            return null;
+            _context.Employees.Remove(employee);
+            _context.SaveChanges();
         }
-        _context.Employees.Remove(result);
-        _context.SaveChanges();
-        return result;
+        return employee;
     }
+
+    /// <summary>
+    /// 演習-13 指定された氏名で社員と所属部署を取得する
+    /// </summary>
+    /// <param name="name">社員名</param>
+    /// <returns>検索結果</returns>
     public EmployeeEntity? FindByNameJoinDepartment(string name)
     {
-        var result = _context.Employees
-            .Where(e => e.Name == name)
+        var employee = _context.Employees
             .Include(e => e.Department)
-            .Single();
-        if (result == null)
+            .Where(e => e.Name == name)
+            .SingleOrDefault();
+        return employee;
+    }
+
+    /// <summary>
+    /// 演習-16 演習-16 データの有無を確認する
+    /// </summary>
+    /// <param name="name">社員名</param>
+    /// <returns>検索結果</returns>
+    public List<EmployeeEntity>? FindByNameContainsJoinDepartment(string name)
+    {
+        var employees = _context.Employees
+            .Include(e => e.Department)
+            .Where(e => e.Name!.Contains(name))
+            .ToList();
+        if (employees.Count == 0)
         {
-            return null;
+            return null!;
         }
-        return result;
+        return employees!;
     }
 }
