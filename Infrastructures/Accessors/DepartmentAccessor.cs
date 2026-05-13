@@ -1,27 +1,25 @@
 using CS_DB_Exercise.Infrastructures.Entities;
 using CS_DB_Exercise.Infrastructures.Contexts;
-namespace CS_DB_Exercise.Infrastructures.Queries;
+
+namespace CS_DB_Exercise.Infrastructures.Accessors;
 /// <summary>
 /// departmentテーブルにアクセスするクラス
 /// </summary>
-/// <author>Fullness,Inc.</author>
-/// <date>2025-11-16</date>
-/// <version>1.0.0</version>
-public class DepartementAccessor
+public class DepartmentAccessor
 {
-    //  アプリケーション用DbContext
+    // DbContextのインスタンスを保持するフィールド
     private readonly AppDbContext _context;
-    
+
     /// <summary>
     /// コンストラクタ
     /// </summary>
-    /// <param name="context">アプリケーション用DbContext</param>
-    public DepartementAccessor(AppDbContext context)
+    /// <param name="context">演習用DbContext</param>
+    public DepartmentAccessor(AppDbContext context)
     {
         _context = context;
     }
 
-      /// <summary>
+    /// <summary>
     /// すべての部署を取得する
     /// </summary>
     public List<DepartmentEntity> FindAll()
@@ -31,14 +29,26 @@ public class DepartementAccessor
         return departments;
     }
 
-        /// <summary>
-    /// 指定した部署Idの部署を取得する
+    /// <summary>
+    /// 演習-06 指定した部署Idの部署を取得する
     /// </summary>
-    /// <param name="departmentId">部署Id(主キー)</param>
-    public DepartmentEntity? FindById(int departmentId)
+    /// <param name="id">部署Id(主キー)</param>
+    public DepartmentEntity? FindById(int id)
     {
         // Find()メソッドを使用して、指定した部署Idの部署を取得する
-        var department = _context.Departments.Find(departmentId);
+        var department = _context.Departments.Find(id);
         return department;
     }
+
+    /// <summary>
+    /// 演習-06 (別解) departmentテーブルから主キー値で部署を取得する
+    /// </summary>
+    /// <returns>取得結果</returns>
+    // public DepartmentEntity? FindById(int id)
+    // {
+    //     var department = _context.Departments
+    //         .Where(d => d.Id == id)
+    //         .SingleOrDefault();
+    //     return department;
+    // }
 }

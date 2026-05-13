@@ -1,15 +1,30 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using CS_DB_Exercise.Infrastructures.Entities;
 
 namespace CS_DB_Exercise.Infrastructures.Contexts;
 
-
 public class AppDbContext : DbContext
 {
-    public DbSet<EmployeeEntity> Employees { get; set; } = null!;
+    /// <summary>
+    /// departmentテーブルにマッピングされるDbSetプロパティ 
+    /// </summary>
     public DbSet<DepartmentEntity> Departments { get; set; } = null!;
 
+    /// <summary>
+    /// employeeテーブルにマッピングされるDbSetプロパティ 
+    /// </summary>
+    public DbSet<EmployeeEntity> Employees { get; set; } = null!;
+
+    /// <summary>
+    /// DbContextの構成処理をする
+    /// データベース接続情報の設定や、SQLログ出力の有効化する
+    /// </summary>
+    /// <param name="optionsBuilder">
+    /// DbContextの動作設定を構築するためのオプションビルダーオブジェクト
+    /// 接続先データベースやログ設定などを定義
+    /// </param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         // 接続文字列（サーバー名、DB名、ユーザー名、パスワード）
