@@ -63,7 +63,17 @@ public class EmployeeAccessor
             return null;
         }
         result.Name = employee.Name;
-        //result.DeptId = employee.DeptId;
+        _context.SaveChanges();
+        return result;
+    }
+    public EmployeeEntity? DeleteById(int id)
+    {
+        var result = _context.Employees.Find(id);
+        if (result == null)
+        {
+            return null;
+        }
+        _context.Employees.Remove(result);
         _context.SaveChanges();
         return result;
     }
