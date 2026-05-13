@@ -1,21 +1,40 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace CS_DB_Exercise.Infrastructures.Entities;
-
+/// <summary>
+/// 演習-03 Entityクラスを実装する
+/// employeeテーブルとマッピングするエンティティクラス
+/// </summary>
 [Table("employee")]
 public class EmployeeEntity
 {
+    /// <summary>
+    /// 社員Id
+    /// </summary>
     [Key]
     [Column("id")]
-    public int Id { get; set; }         // 従業員Id（主キー）
+    public int Id {get; set;}
     [Column("name")]
-    public string? Name { get; set; }   // 従業員名
+    /// <summary>
+    /// 社員名
+    /// </summary>
+    public string? Name {get; set;}
+    /// <summary>
+    /// 部署Id
+    /// </summary>
     [Column("dept_id")]
-    public int DeptId { get; set; }     // 部署Id（外部キー）
+    public int DeptId {get; set;}
+
+    /// <summary>
+    /// 演習-12 employeeテーブルとdepartmentテーブルを結合可能にする
+    /// 所属部署
+    /// </summary>
+    [ForeignKey("DeptId")]
+    public DepartmentEntity? Department { get; set; }
+
 
     public override string ToString()
     {
-        return $"従業員Id:{Id} , 従業員名:{Name} , 部署Id:{DeptId}";
+        return $"社員Id={Id} , 社員名={Name} , 部署Id={DeptId}";
     }
 }
