@@ -1,6 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+
 using CS_DB_Exercise.Infrastructures.Entities;
 using CS_DB_Exercise.Infrastructures.Contexts;
-using Microsoft.EntityFrameworkCore;
 
 namespace CS_DB_Exercise.Infrastructures.Accessors;
 /// <summary>
@@ -52,16 +53,29 @@ public class DepartmentAccessor
     //         .SingleOrDefault();
     //     return department;
     // }
+
+    /// <summary>
+    /// 演習-14 指定された部署Idの部署と所属社員を取得する
+    /// </summary>
+    /// <param name="id">部署Id</param>
+    /// <returns>取得結果</returns>
     public DepartmentEntity? FindByIdJoinEmployee(int id)
     {
         var department = _context.Departments
-            .Where(d => d.Id == id)
             .Include(d => d.Employees)
+            .Where(d => d.Id == id)
             .SingleOrDefault();
-        if (department == null)
-        {
-            return null;
-        }
         return department;
+    }
+
+    /// <summary>
+    /// 演習-15 トランザクション制御機能を確認する
+    /// </summary>
+    /// <param name="department"></param>
+    public DepartmentEntity Create(DepartmentEntity department)
+    {
+        var result = _context.Departments.Add(department);
+        _context.SaveChanges();
+        return result.Entity;
     }
 }

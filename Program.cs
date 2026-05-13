@@ -1,5 +1,8 @@
-﻿using CS_DB_Exercise.Infrastructures.Accessors;
+﻿using Microsoft.EntityFrameworkCore;
+
+using CS_DB_Exercise.Infrastructures.Accessors;
 using CS_DB_Exercise.Infrastructures.Contexts;
+using CS_DB_Exercise.Infrastructures.Entities;
 
 namespace CS_DB_Exercise;
 
@@ -10,71 +13,57 @@ class Program
         // 演習用DbContextを生成する
         var context = new AppDbContext();
 
-        // EmployeeおよびDepartmentテーブルアクセスクラスを生成する
-        var employeeAccessor = new EmployeeAccessor(context);
+        // departmentテーブルアクセスクラスを生成する
         var departmentAccessor = new DepartmentAccessor(context);
 
-        // 演習-11 employeeテーブルの社員を削除する
-        //Exercise13(employeeAccessor);
-        // 演習-14 departmentテーブルの部署と所属社員を取得する
-        Exercise14(departmentAccessor);
+        // 演習-15 トランザクション制御機能を確認する
+        Exercise15(context, departmentAccessor);
     }
 
     /// <summary>
-    /// 演習-11 employeeテーブルの社員を削除する
+    /// 演習-15 トランザクション制御機能を確認する
     /// </summary>
-    /// <param name="employeeAccessor">Employeeテーブルアクセスクラス</param>
+    /// <param name="context">演習用DbContext</param>
+    /// <param name="departmentAccessor">Departmentテーブルアクセスクラス</param>
     /// <returns></returns>
-    private static void Exercise11(EmployeeAccessor employeeAccessor)
+    private static void Exercise15(DbContext context, DepartmentAccessor departmentAccessor)
     {
+        using var transaction = context.Database.BeginTransaction();
+        Console.WriteLine("トランザクションを開始しました。");
 
-        Console.Write("社員Idを入力してください->");
-        var empId = int.Parse(Console.ReadLine()!);
-
-        Console.WriteLine("演習-11 指定された社員Idの社員を削除する\r\n");
-        // 指定された社員Idの社員を削除する
-        var result = employeeAccessor.DeleteById(empId);
-        // 削除結果がnullの場合は該当社員が存在しないため削除できなかった旨を表示する
-        if (result == null)
+        Console.Write("新しい部署名を入力してください->");
+        var name = Console.ReadLine();
+        var entity = new DepartmentEntity
         {
-            Console.WriteLine($"社員Id:{empId}の社員は存在しないため削除できませんでした");
-            return;
+            Id = 0, // Idは自動採番されるため、0を指定する
+            Name = name
+        };
+        // Create()メソッドを使用して、departmentテーブルに新しい部署を登録する
+        var result = departmentAccessor.Create(entity);
+        Console.WriteLine($"新しい部署を登録しました: 部署Id={result.Id} , 部署名={result.Name}");
+
+        Console.Write("トランザクションをコミットしますか？ (y/n)->");
+        var input = Console.ReadLine();
+        //ToLower()メソッドは、文字列内の英字をすべて小文字に変換した新しい文字列を返す。
+        if (input?.ToLower() == "y")
+
+        {
+            // トランザクションをコミットする
+            transaction.Commit();
+            Console.WriteLine("トランザクションをコミットしました。");
         }
-        Console.WriteLine($"社員Id:{empId}の社員を削除しました");
-    }
-        private static void Exercise13(EmployeeAccessor employeeAccessor)
-    {
-
-        Console.Write("社員名を入力してください->");
-        var empName = Console.ReadLine();
-
-        Console.WriteLine("演習-13 指定された社員名の社員と所属部署を取得する\r\n");
-                var result = employeeAccessor.FindByNameJoinDepartment(empName);
-        // 取得結果がnullの場合は該当社員が存在しないため取得できなかった旨を表示する
-        if (result == null)
+        else
         {
-            Console.WriteLine($"社員名:{empName}の社員は存在しませんでした");
-            return;
+            // トランザクションをロールバックする
+            transaction.Rollback();
+            Console.WriteLine("トランザクションをロールバックしました。");
         }
-        Console.WriteLine($"社員Id={result.Id},社員名={result.Name},部署ID={result.DeptId},部署名={result.Department?.Name}");
-    }
-    private static void Exercise14(DepartmentAccessor departmentAccessor)
-    {
 
-        Console.Write("部署Idを入力してください->");
-        var deptId = int.Parse(Console.ReadLine()!);
-
-        Console.WriteLine("演習-14 指定された部署Idの部署と所属社員を取得する\r\n");
-        var result = departmentAccessor.FindByIdJoinEmployee(deptId);
-        if (result == null)
+        // 登録した部署を含むすべての部署を取得して表示する
+        var departments = departmentAccessor.FindAll();
+        foreach (var department in departments)
         {
-            Console.WriteLine($"部署Id:{deptId}の部署は存在しませんでした");
-            return;
-        }
-        Console.WriteLine($"部署Id={result.Id},部署名={result.Name}");
-        foreach (var employee in result.Employees)
-        {
-            Console.WriteLine($"  社員Id={employee.Id},社員名={employee.Name},部署Id={result.Id}");
+            Console.WriteLine($"部署Id={department.Id} , 部署名={department.Name}");
         }
     }
 }
