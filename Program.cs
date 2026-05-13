@@ -15,7 +15,7 @@ class Program
         // var departmentAccessor = new DepartmentAccessor(context);
 
         // 演習-11 employeeテーブルの社員を削除する
-        Exercise11(employeeAccessor);
+        Exercise13(employeeAccessor);
     }
 
     /// <summary>
@@ -39,5 +39,21 @@ class Program
             return;
         }
         Console.WriteLine($"社員Id:{empId}の社員を削除しました");
+    }
+        private static void Exercise13(EmployeeAccessor employeeAccessor)
+    {
+
+        Console.Write("社員名を入力してください->");
+        var empName = Console.ReadLine();
+
+        Console.WriteLine("演習-13 指定された社員名の社員と所属部署を取得する\r\n");
+                var result = employeeAccessor.FindByNameJoinDepartment(empName);
+        // 取得結果がnullの場合は該当社員が存在しないため取得できなかった旨を表示する
+        if (result == null)
+        {
+            Console.WriteLine($"社員名:{empName}の社員は存在しませんでした");
+            return;
+        }
+        Console.WriteLine($"社員Id={result.Id},社員名={result.Name},部署ID={result.DeptId},部署名={result.Department?.Name}");
     }
 }
