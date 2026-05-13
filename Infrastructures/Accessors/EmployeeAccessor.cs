@@ -39,9 +39,9 @@ public class EmployeeAccessor
     }
     public List<EmployeeEntity>? FindByContainsName(string keyword)
     {
-       var employees = _context.Employees
-            .Where(e => e.Name.Contains(keyword))
-            .ToList();
+        var employees = _context.Employees
+             .Where(e => e.Name!.Contains(keyword))
+             .ToList();
         if (employees.Count == 0)
         {
             return null;
@@ -49,10 +49,22 @@ public class EmployeeAccessor
 
         return employees;
     }
-    public void Create(EmployeeEntity employee)
+    public EmployeeEntity? Create(EmployeeEntity employee)
     {
         var result = _context.Employees.Add(employee);
         _context.SaveChanges();
-      
+        return result.Entity;
+    }
+    public EmployeeEntity? UpdateById(EmployeeEntity employee)
+    {
+        var result = _context.Employees.Find(employee.Id);
+        if (result == null)
+        {
+            return null;
+        }
+        result.Name = employee.Name;
+        //result.DeptId = employee.DeptId;
+        _context.SaveChanges();
+        return result;
     }
 }
