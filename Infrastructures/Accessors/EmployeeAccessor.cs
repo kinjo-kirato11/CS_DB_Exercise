@@ -36,4 +36,16 @@ public class EmployeeAccessor
 
         return employees;
     }
+    public List<EmployeeEntity>? FindByContainsName(string keyword)
+    {
+       var employees = _context.Employees
+            .Where(e => e.Name.Contains(keyword))
+            .ToList();
+        if (employees.Count == 0)
+        {
+            return null;
+        }
+
+        return employees;
+    }
 }

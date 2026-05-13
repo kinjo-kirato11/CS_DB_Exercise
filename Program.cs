@@ -23,8 +23,9 @@ class Program
         // Employeeテーブルアクセスクラスを生成する
         var employeeAccessor = new EmployeeAccessor(context);
         // 演習-07 employeeテーブルから部署Idで該当社員を取得する
-
-        Exercise07(employeeAccessor);
+        // Exercise07(employeeAccessor);
+        // 演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する
+        Exercise08(employeeAccessor);
     }
 
     /// <summary>
@@ -85,6 +86,31 @@ class Program
         else
         {
             Console.WriteLine($"部署Id:{deptId}の社員は存在しません");
+        }
+        return;
+    }
+
+    /// <summary>
+    /// 演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する
+    /// </summary>
+    /// <param name="accessor">EmployeeAccessorのインスタンス</param>
+    static void Exercise08(EmployeeAccessor accessor)
+    {
+        Console.Write("キーワードを入力してください->");
+        var keyword = Console.ReadLine()!;
+        var employees = accessor.FindByContainsName(keyword);
+
+        Console.WriteLine("演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する");
+        if (employees != null)
+        {
+            foreach (var employee in employees)
+            {
+                Console.WriteLine(employee);
+            }
+        }
+        else
+        {
+            Console.WriteLine($"キーワード:{keyword}が含まれる社員は存在しません");
         }
         return;
     }
